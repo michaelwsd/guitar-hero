@@ -769,8 +769,7 @@ function showKeys() {
     showKey("KeyL");
 }
 
-// The following simply runs your main function on window load.  Make sure to leave it in place.
-// You should not need to change this, beware if you are.
+// The following runs main on window load.  
 if (typeof window !== "undefined") {
     // Load in the instruments and then start your game!
     const samples = SampleLibrary.load({
