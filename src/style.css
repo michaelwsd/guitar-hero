@@ -1,10 +1,11 @@
 :root {
-    background-color: rgba(95, 55, 9, 0.829);
+    background-color: black;
     padding: 2em;
     padding-top: 4em;
 }
 
 BODY,
+title,
 H2,
 H3,
 H4,
@@ -12,7 +13,30 @@ H5,
 H6,
 TH,
 TD {
-    font-family: arial, helvetica, sans-serif;
+    font-family: 'Public Pixel', sans-serif;
+}
+
+#startButton,
+#restartButton {
+    font-family: 'Public Pixel', sans-serif;
+    border-radius: 1cm;
+    height: 50px;
+}
+
+.btn {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-direction: column;
+    align-items: center;
+}
+
+#KeyH,
+#KeyJ,
+#KeyK,
+#KeyL {
+    width: 100px;
+    font-family: 'Public Pixel', sans-serif;
 }
 
 body {
@@ -20,11 +44,11 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 50px;
 }
 
 H1 {
     font-size: 3em;
-    font-family: arial, helvetica, sans-serif;
     font-weight: bolder;
     background-color: rgb(214, 214, 214);
     border-radius: 0.05em;
@@ -41,19 +65,22 @@ H1 {
 
 .col {
     flex-direction: column;
+    gap: 25px;
 }
 
 .row {
     flex-direction: row;
+    gap: 40px;
 }
 
 main {
     background-color: rgb(238, 238, 238);
     border-radius: 0.25em;
     box-shadow: 0em 0em 0.5em rgb(20, 20, 20);
-    flex-wrap: wrap;
     padding: 1em;
-    max-width: 400px;
+    width: 600px;
+    font-size: 15px;
+    height: 420px;
 }
 
 /* added new css */
@@ -71,7 +98,8 @@ main {
 }
 
 .highlight {
-    background-color: rgb(225, 255, 0); /* Example highlight style */
+    background-color: black;
+    color: white;
 }
 
 /* https://stackoverflow.com/questions/6088409/svg-drop-shadow-using-css3 */
@@ -91,11 +119,12 @@ svg rect {
 }
 
 #svgCanvas {
-    background-color: rgb(154, 154, 154);
+    background-color: black;
+    width: 50%;
 }
 
 #info {
-    width: 160px;
+    width: 230px;
     margin-top: 1em;
 }
 
