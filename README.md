@@ -15,4 +15,6 @@ Serve up the App (and ctrl-click the URL that appears in the console)
 ```
 
 ## Demo Preview 
-![image](https://github.com/user-attachments/assets/b6df2b71-cbcd-44cb-9559-894531ee3d26)
+![image](https://github.com/user-attachments/assets/e10cf889-7f4a-49b4-a3bd-a5977c4b187c)
+![image](https://github.com/user-attachments/assets/1126fa7c-51e8-4ad2-9b1e-aca0650bd5b8)
+
