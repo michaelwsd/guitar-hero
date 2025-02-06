@@ -22,7 +22,7 @@ const Viewport = {
 
 const Constants = {
     TICK_RATE_MS: 10,
-    SONG_NAME: "SleepingBeauty",
+    SONG_NAME: "TokyoGhoulOP2",
     NOTE_BOUND: Viewport.CANVAS_HEIGHT - 50,
     TAIL_BOUND: 1,
 } as const;
@@ -310,7 +310,7 @@ function updateTail(note: Note) {
             y: String(note.tail.tailStart - note.tail.tailLength),
             width: `${Note.TAIL_WIDTH}`,
             height: String(note.tail.tailLength),
-            style: `fill: ${color}; stroke: lightgrey; stroke-width: 2px;`,
+            style: `fill: white; stroke: lightgrey; stroke-width: 2px;`,
             class: "shadow",
         });
         svg.appendChild(svgTail);
@@ -612,7 +612,7 @@ export function main(
                             r: `${Note.RADIUS}`,
                             cx: cx,
                             cy: String(noteState.position),
-                            style: `fill: ${color}`,
+                            style: `fill: white`,
                             class: "shadow",
                         },
                     );
@@ -769,7 +769,8 @@ function showKeys() {
     showKey("KeyL");
 }
 
-// The following runs main on window load.  
+// The following simply runs your main function on window load.  Make sure to leave it in place.
+// You should not need to change this, beware if you are.
 if (typeof window !== "undefined") {
     // Load in the instruments and then start your game!
     const samples = SampleLibrary.load({
