@@ -22,7 +22,7 @@ const Viewport = {
 
 const Constants = {
     TICK_RATE_MS: 10,
-    SONG_NAME: "TokyoGhoulOP2",
+    SONG_NAME: "FurElise",
     NOTE_BOUND: Viewport.CANVAS_HEIGHT - 50,
     TAIL_BOUND: 1,
 } as const;
@@ -33,7 +33,7 @@ const Note = {
 };
 
 /** User input */
-type Key = "KeyH" | "KeyJ" | "KeyK" | "KeyL";
+type Key = "KeyH" | "KeyJ" | "KeyK" | "KeyL" | "KeyP";
 
 type Event = "keydown" | "keyup" | "keypress";
 
@@ -193,9 +193,9 @@ class ButtonDown implements Action {
 
     // function that generates a random note
     private generateRandomNote(seed: number): Note {
-        const pitch = Math.floor(RNG.scale(seed) * 80 + 10);
-        const velocity = Math.floor(RNG.scale(seed) * 30 + 10);
-        const duration = RNG.scale(seed) * 0.5;
+        const pitch = 0.1;
+        const velocity = 5;
+        const duration = 0.1;
 
         return {
             id: 1,
@@ -290,6 +290,17 @@ class ButtonUp implements Action {
     }
 }
 
+class PauseButton implements Action {
+    constructor() {}
+
+    apply(s: State): State {
+        return {
+            ...s,
+            paused: s.paused ? false : true
+        };
+    }
+}
+
 // ADD TAIL SVG
 function updateTail(note: Note) {
     const svg = document.querySelector("#svgCanvas") as SVGGraphicsElement &
@@ -357,6 +368,7 @@ type State = Readonly<{
     combo: number;
     multiplier: number;
     seed: number;
+    paused: boolean; 
 }>;
 
 // INITIAL STATE
@@ -367,6 +379,7 @@ const initialState: State = {
     combo: 0,
     multiplier: 1,
     seed: 1,
+    paused: false
 } as const;
 
 /**
@@ -376,6 +389,10 @@ const initialState: State = {
  * @returns Updated state
  */
 const tick = (s: State) => {
+    if (s.paused) {
+        return s;
+    }
+
     // get all new notes that are missed (not missed already)
     const missedNotes = s.currNotes.filter((noteState) => {
         return (
@@ -487,15 +504,14 @@ export function main(
     csvContents: string,
     samples: { [key: string]: Tone.Sampler },
 ) {
+    togglePauseResumeIcons();
+    
     // Canvas elements
     const restart = document.getElementById("restartButton");
     const svg = document.querySelector("#svgCanvas") as SVGGraphicsElement &
         HTMLElement;
     const gameover = document.querySelector("#gameOver") as SVGGraphicsElement &
         HTMLElement;
-
-    svg.setAttribute("height", `${Viewport.CANVAS_HEIGHT}`);
-    svg.setAttribute("width", `${Viewport.CANVAS_WIDTH}`);
 
     // Text fields
     const multiplier = document.querySelector("#multiplierText") as HTMLElement;
@@ -540,6 +556,10 @@ export function main(
         map((_) => new ButtonUp("yellow")),
     );
 
+    const pauseClick$ = key$("keydown", "KeyP").pipe(
+        map(() => new PauseButton())
+    );
+
     /** Determines the rate of time steps */
     const tick$ = interval(Constants.TICK_RATE_MS).pipe(
         map((elapsed) => new Tick(elapsed)),
@@ -553,6 +573,10 @@ export function main(
      * @param s Current state
      */
     const render = (s: State, prevHighScore: number) => {
+        if (s.paused) {
+            return s;
+        }
+
         s.currNotes.forEach((noteState) => {
             // case if the note is not user played, simple play the note
             if (
@@ -712,6 +736,7 @@ export function main(
         redKeyUp$,
         blueKeyUp$,
         yellowKeyUp$,
+        pauseClick$
     );
 
     // reduce states
@@ -752,27 +777,52 @@ export function main(
 
 // display keys when clicked
 function showKeys() {
-    function showKey(k: Key) {
-        const arrowKey = document.getElementById(k);
+    function showKey(k: Key, circle: any, text: any) {
+        const circleSvg = document.getElementById(circle);
+        const textElem = document.getElementById(text);
+        
         // getElement might be null, in this case return without doing anything
-        if (!arrowKey) return;
+        if (!circleSvg || !textElem) return;
         const o = (e: Event) =>
             fromEvent<KeyboardEvent>(document, e).pipe(
                 filter(({ code }) => code === k),
             );
-        o("keydown").subscribe((e) => arrowKey.classList.add("highlight"));
-        o("keyup").subscribe((_) => arrowKey.classList.remove("highlight"));
+        o("keydown").subscribe(() => {
+            circleSvg.classList.add("highlight");
+            textElem.classList.add("highlight-text");
+        });
+        o("keyup").subscribe(() => {
+            circleSvg.classList.remove("highlight");
+            textElem.classList.remove("highlight-text");
+        });
     }
-    showKey("KeyH");
-    showKey("KeyJ");
-    showKey("KeyK");
-    showKey("KeyL");
+    showKey("KeyH", "circle1", "text1");
+    showKey("KeyJ", "circle2", "text2");
+    showKey("KeyK", "circle3", "text3");
+    showKey("KeyL", "circle4", "text4");
 }
+
+// toggle pause button
+function togglePauseResumeIcons() {
+    const pauseIcon = document.getElementById("pause") as HTMLElement;
+    const resumeIcon = document.getElementById("resume") as HTMLElement;
+  
+    if (!pauseIcon || !resumeIcon) return;
+  
+    fromEvent<KeyboardEvent>(document, "keydown")
+      .pipe(filter((e) => e.code === "KeyP"))
+      .subscribe(() => {
+        const isPaused = pauseIcon.style.display !== "none";
+  
+        // Toggle visibility
+        pauseIcon.style.display = isPaused ? "none" : "block";
+        resumeIcon.style.display = isPaused ? "block" : "none";
+      });
+  }
 
 // The following simply runs your main function on window load.  Make sure to leave it in place.
 // You should not need to change this, beware if you are.
 if (typeof window !== "undefined") {
-    // Load in the instruments and then start your game!
     const samples = SampleLibrary.load({
         instruments: [
             "bass-electric",
@@ -782,57 +832,60 @@ if (typeof window !== "undefined") {
             "saxophone",
             "trombone",
             "flute",
-        ], // SampleLibrary.list,
+        ],
         baseUrl: "samples/",
     });
 
-    // changed startGame logic
-    const startGame = (contents: string) => {
-        const startButton = document.getElementById(
-            "startButton",
-        ) as HTMLElement;
-        const restartButton = document.getElementById(
-            "restartButton",
-        ) as HTMLElement;
+    const startButton = document.getElementById("startButton") as HTMLElement;
+    const restartButton = document.getElementById("restartButton") as HTMLElement;
+    const songSelect = document.getElementById("songSelect") as HTMLSelectElement;
+    restartButton.classList.add("hidden");
 
-        // hide the restart button until game ends
-        restartButton.classList.add("hidden");
-        const game: any[] = [];
+    let songContent = "";
+    let game: any = null;
+    let startClickHandler: () => void;
 
-        // add start button listener
-        startButton.addEventListener(
-            "click",
-            function () {
-                startButton.classList.add("hidden");
-                game[0] = main(contents, samples);
-                showKeys();
-            },
-            { once: true },
-        );
-
-        // add restart button listener
-        restartButton.addEventListener("click", function () {
-            restartButton.classList.add("hidden");
-            if (game[0]) {
-                game[0].restart();
-            }
-        });
+    const fetchAndSetSong = async (songName: string) => {
+        const { protocol, hostname, port } = new URL(import.meta.url);
+        const baseUrl = `${protocol}//${hostname}${port ? `:${port}` : ""}`;
+        const response = await fetch(`${baseUrl}/assets/${songName}.csv`);
+        const text = await response.text();
+        songContent = text;
     };
 
-    const { protocol, hostname, port } = new URL(import.meta.url);
-    const baseUrl = `${protocol}//${hostname}${port ? `:${port}` : ""}`;
+    const attachStartButtonListener = () => {
+        // Remove old listener if it exists
+        if (startClickHandler) {
+            startButton.removeEventListener("click", startClickHandler);
+        }
 
-    Tone.ToneAudioBuffer.loaded().then(() => {
+        startClickHandler = () => {
+            startButton.classList.add("hidden");
+            game = main(songContent, samples);
+            showKeys();
+        };
+
+        startButton.addEventListener("click", startClickHandler, { once: true });
+    };
+
+    songSelect.addEventListener("change", async (event) => {
+        const newSong = (event.target as HTMLSelectElement).value;
+        await fetchAndSetSong(newSong);
+        attachStartButtonListener(); // set new listener with updated songContent
+    });
+
+    restartButton.addEventListener("click", () => {
+        restartButton.classList.add("hidden");
+        if (game) game.restart();
+    });
+
+    Tone.ToneAudioBuffer.loaded().then(async () => {
         for (const instrument in samples) {
             samples[instrument].toDestination();
             samples[instrument].release = 0.5;
         }
 
-        fetch(`${baseUrl}/assets/${Constants.SONG_NAME}.csv`)
-            .then((response) => response.text())
-            .then((text) => startGame(text))
-            .catch((error) =>
-                console.error("Error fetching the CSV file:", error),
-            );
+        await fetchAndSetSong(songSelect.value); // fetch initial song
+        attachStartButtonListener();              // attach initial start click
     });
 }

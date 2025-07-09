@@ -13,14 +13,25 @@ H5,
 H6,
 TH,
 TD {
-    font-family: 'Public Pixel', sans-serif;
+    font-family: 'Distem', sans-serif;
 }
 
-#startButton,
-#restartButton {
-    font-family: 'Public Pixel', sans-serif;
+#songSelect {
+    padding: 10px;
+    border-radius: 5px;
+    font-family: 'Distem', sans-serif;
+}
+
+#startButton {
+    font-family: 'Distem', sans-serif;
     border-radius: 1cm;
-    height: 50px;
+    height: 40px;
+}
+
+#restartButton {
+    font-family: 'Distem', sans-serif;
+    border-radius: 1cm;
+    height: 40px;
 }
 
 .btn {
@@ -36,7 +47,7 @@ TD {
 #KeyK,
 #KeyL {
     width: 100px;
-    font-family: 'Public Pixel', sans-serif;
+    font-family: 'Morria', sans-serif;
 }
 
 body {
@@ -44,15 +55,15 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 50px;
+    gap: 30px;
 }
 
 H1 {
     font-size: 3em;
     font-weight: bolder;
-    background-color: rgb(214, 214, 214);
-    border-radius: 0.05em;
-    padding: 0.1em 0.1em 0.1em 0.1em;
+    background-color: white;
+    border-radius: 1em;
+    padding: 0.1em 0.5em 0.1em 0.5em;
     box-shadow: 0em 0em 0.15em rgb(211, 211, 211);
     text-shadow: 0em 0em 1px rgb(68, 68, 68);
 }
@@ -98,9 +109,13 @@ main {
 }
 
 .highlight {
-    background-color: black;
-    color: white;
+    fill: black;
+    stroke: grey;
 }
+
+.highlight-text {
+    fill: white; /* SVG text color is controlled by 'fill' */
+  }
 
 /* https://stackoverflow.com/questions/6088409/svg-drop-shadow-using-css3 */
 .shadow {
@@ -143,7 +158,11 @@ svg rect {
 }
 
 #gameOver {
-    font-size: 1.5em;
+    font-size: 2em;
     font-weight: bolder;
     text-align: center;
+}
+
+#resume {
+  display: none;
 }
