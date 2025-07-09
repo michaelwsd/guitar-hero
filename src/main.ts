@@ -320,7 +320,7 @@ function updateTail(note: Note) {
             x: `${String(parseFloat(cx) - 2)}%`,
             y: String(note.tail.tailStart - note.tail.tailLength),
             width: `${Note.TAIL_WIDTH}`,
-            height: String(note.tail.tailLength),
+            height: String(note.tail.tailLength - 15),
             style: `fill: white; stroke: lightgrey; stroke-width: 2px;`,
             class: "shadow",
         });
