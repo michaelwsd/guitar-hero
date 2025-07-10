@@ -839,6 +839,8 @@ if (typeof window !== "undefined") {
     const startButton = document.getElementById("startButton") as HTMLElement;
     const restartButton = document.getElementById("restartButton") as HTMLElement;
     const songSelect = document.getElementById("songSelect") as HTMLSelectElement;
+    const pauseIcon = document.getElementById("pause") as HTMLElement;
+    const resumeIcon = document.getElementById("resume") as HTMLElement;
     restartButton.classList.add("hidden");
 
     let songContent = "";
@@ -860,6 +862,11 @@ if (typeof window !== "undefined") {
         }
 
         startClickHandler = () => {
+            const isPaused = resumeIcon.style.display !== "none";
+  
+            // Toggle visibility
+            pauseIcon.style.display = isPaused ? "block" : "none";
+            resumeIcon.style.display = isPaused ? "none" : "block";
             startButton.classList.add("hidden");
             game = main(songContent, samples);
             showKeys();
